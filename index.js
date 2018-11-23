@@ -60,10 +60,15 @@ app.post('/api/persons', (req, res) => {
   const body = req.body
 
   if (body.name === undefined) {
-    return res.status(400).json({error: 'name missing'})
+    return res.status(400).json({ error: 'name missing' })
   }
   if (body.number === undefined) {
-    return res.status(400).json({error: 'number missing'})
+    return res.status(400).json({ error: 'number missing' })
+  }
+
+  if (persons.find(person => person.name === body.name)) {
+    return res.status(409)
+      .json({ error: `number already exists for '${body.name}'` })
   }
 
   const id = Math.floor(Math.random() * 1e10)
