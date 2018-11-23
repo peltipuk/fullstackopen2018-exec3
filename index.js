@@ -1,7 +1,9 @@
 const express = require('express')
 const app = express()
 const bodyParser = require('body-parser')
+const morgan = require('morgan')
 
+app.use(morgan('tiny', { immediate: false}))
 app.use(bodyParser.json())
 
 let persons = [
@@ -71,8 +73,7 @@ app.post('/api/persons', (req, res) => {
       .json({ error: `number already exists for '${body.name}'` })
   }
 
-  const id = Math.floor(Math.random() * 1e10)
-  console.log(`Creating new person with generated id ${id}`)
+  const id = Math.floor(Math.random() * 1e10)  
   const person = {
     name: body.name,
     number: body.number,
@@ -81,6 +82,12 @@ app.post('/api/persons', (req, res) => {
   persons = persons.concat(person)
   res.status(201).json(person)
 })
+
+const error = (request, response) => {
+  response.status(404).send({error: 'unknown endpoint'})
+}
+
+app.use(error)
 
 const port = 3001
 app.listen(port, () => {
