@@ -56,6 +56,27 @@ app.get('/info', (req, res) => {
   `)
 })
 
+app.post('/api/persons', (req, res) => {
+  const body = req.body
+
+  if (body.name === undefined) {
+    return res.status(400).json({error: 'name missing'})
+  }
+  if (body.number === undefined) {
+    return res.status(400).json({error: 'number missing'})
+  }
+
+  const id = Math.floor(Math.random() * 1e10)
+  console.log(`Creating new person with generated id ${id}`)
+  const person = {
+    name: body.name,
+    number: body.number,
+    id: id
+  }
+  persons = persons.concat(person)
+  res.status(201).json(person)
+})
+
 const port = 3001
 app.listen(port, () => {
   console.log(`Server running on port ${port}`)
