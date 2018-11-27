@@ -75,10 +75,20 @@ app.post('/api/persons', (req, res) => {
     name: body.name,
     number: body.number,
   })
-  person
-    .save()
+
+  Person
+    .find({ name: body.name })
     .then(result => {
-      res.status(201).json(Person.format(result))
+      console.log('POST result', result)
+      if (result.length === 0) {
+        person
+          .save()
+          .then(result => {
+            res.status(201).json(Person.format(result))
+          })
+      } else {
+        res.status(409).json({ error: `Already exists: '${body.name}'`})
+      }
     })
 })
 
