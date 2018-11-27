@@ -51,10 +51,14 @@ app.delete('/api/persons/:id', (req, res) => {
 })
 
 app.get('/info', (req, res) => {
-  res.send(`
-    <div>puhelinluettelossa ${persons.length} henkilön tiedot</div>
-    <div>${new Date().toString()}</div>
-  `)
+  Person
+    .count()
+    .then(count => {
+      res.send(`
+      <div>puhelinluettelossa ${count} henkilön tiedot</div>
+      <div>${new Date().toString()}</div>
+    `)
+    })
 })
 
 app.post('/api/persons', (req, res) => {
