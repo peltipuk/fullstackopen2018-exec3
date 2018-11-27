@@ -61,19 +61,15 @@ app.post('/api/persons', (req, res) => {
     return res.status(400).json({ error: 'number missing' })
   }
 
-  if (persons.find(person => person.name === body.name)) {
-    return res.status(409)
-      .json({ error: `number already exists for '${body.name}'` })
-  }
-
-  const id = Math.floor(Math.random() * 1e10)
-  const person = {
+  const person = new Person({
     name: body.name,
     number: body.number,
-    id: id
-  }
-  persons = persons.concat(person)
-  res.status(201).json(person)
+  })
+  person
+    .save()
+    .then(result => {
+      res.status(201).json(result)
+    })
 })
 
 const error = (request, response) => {
