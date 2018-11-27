@@ -3,52 +3,38 @@ const app = express()
 const bodyParser = require('body-parser')
 const morgan = require('morgan')
 const cors = require('cors')
+const Person = require('./models/person')
 
-app.use(morgan(':method :url :body :status :res[content-length] - :response-time ms', { immediate: false}))
 app.use(bodyParser.json())
 app.use(cors())
 app.use(express.static('build'))
-
+app.use(morgan(':method :url :body :status :res[content-length] - :response-time ms', { immediate: true }))
 morgan.token('body', (req, res) => {
   return req.body ? JSON.stringify(req.body) : '{}'
 })
 
-let persons = [
-  {
-    'name': 'Arto Hellas',
-    'number': '040-123456',
-    'id': 1
-  },
-  {
-    'name': 'Martti Tienari',
-    'number': '040-123456',
-    'id': 2
-  },
-  {
-    'name': 'Arto Järvinen',
-    'number': '040-123456',
-    'id': 3
-  },
-  {
-    'name': 'Lea Kutvonen',
-    'number': '040-123456',
-    'id': 4
-  }
-]
-
+// API
 app.get('/api/persons', (req, res) => {
-  res.json(persons)
+  Person
+    .find({})
+    .then(persons => res.json(persons))
 })
 
 app.get('/api/persons/:id', (req, res) => {
-  const id = Number(req.params.id)
-  const person = persons.find(person => person.id === id)
-
-  if (person) {
-    res.json(person)
-  } else {
-    res.status(404).end()
-  }
+  const id = req.params.id
+  Person
+    .find({ _id: id })
+    .then(persons => {
+      console.log('Response:', persons)
+      if (persons.length === 0) {
+        res.status(404).end()
+      } else {
+        res.json(persons)
+      }
+    })
+    .catch(err => {
+      res.status(404).end()
+    })
 })
 
 app.delete('/api/persons/:id', (req, res) => {
@@ -80,7 +66,7 @@ app.post('/api/persons', (req, res) => {
       .json({ error: `number already exists for '${body.name}'` })
   }
 
-  const id = Math.floor(Math.random() * 1e10)  
+  const id = Math.floor(Math.random() * 1e10)
   const person = {
     name: body.name,
     number: body.number,
@@ -91,7 +77,7 @@ app.post('/api/persons', (req, res) => {
 })
 
 const error = (request, response) => {
-  response.status(404).send({error: 'unknown endpoint'})
+  response.status(404).send({ error: 'unknown endpoint' })
 }
 
 app.use(error)
