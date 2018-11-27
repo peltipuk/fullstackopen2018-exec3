@@ -88,7 +88,7 @@ app.post('/api/persons', (req, res) => {
             res.status(201).json(Person.format(result))
           })
       } else {
-        res.status(409).json({ error: `Already exists: '${body.name}'`})
+        res.status(409).json({ error: `Already exists: '${body.name}'` })
       }
     })
 })
