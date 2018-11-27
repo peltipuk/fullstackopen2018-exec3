@@ -45,7 +45,9 @@ app.delete('/api/persons/:id', (req, res) => {
       console.log('Result: ', result)
       res.status(204).end()
     })
-
+    .catch(err => {
+      console.log(err)
+    })
 })
 
 app.get('/info', (req, res) => {
@@ -72,7 +74,39 @@ app.post('/api/persons', (req, res) => {
   person
     .save()
     .then(result => {
-      res.status(201).json(result)
+      res.status(201).json(Person.format(result))
+    })
+})
+
+app.put('/api/persons/:id', (req, res) => {
+  const id = req.params.id
+  const body = req.body
+
+  if (body.name === undefined) {
+    return res.status(400).json({ error: 'name missing' })
+  }
+  if (body.number === undefined) {
+    return res.status(400).json({ error: 'number missing' })
+  }
+  const person = {
+    name: body.name,
+    number: body.number,
+  }
+
+  console.log('Finding by id', id, 'and updating with', person)
+
+  Person
+    .findByIdAndUpdate(id, person, { new: true })
+    .then(result => {
+      console.log('Update result:', result)
+      if (result === null) {
+        res.status(404).end()
+      } else {
+        res.status(200).json(Person.format(result))
+      }
+    })
+    .catch(err => {
+      console.log(err)
     })
 })
 
