@@ -17,7 +17,7 @@ morgan.token('body', (req, res) => {
 app.get('/api/persons', (req, res) => {
   Person
     .find({})
-    .then(persons => res.json(persons))
+    .then(persons => res.json(persons.map(Person.format)))
 })
 
 app.get('/api/persons/:id', (req, res) => {
@@ -29,7 +29,7 @@ app.get('/api/persons/:id', (req, res) => {
       if (persons.length === 0) {
         res.status(404).end()
       } else {
-        res.json(persons)
+        res.json(persons.map(Person.format))
       }
     })
     .catch(err => {
