@@ -1,12 +1,10 @@
 const mongoose = require('mongoose')
+if ( process.env.NODE_ENV !== 'production' ) {
+  require('dotenv').config()
+}
 mongoose.set('useNewUrlParser', true)
 
-if (process.env.mongo_user === undefined || process.env.mongo_password === undefined) {
-  console.log('Provide username and password in env variables mongo_user and mongo_password')
-  process.exit(1)
-}
-
-const url = `mongodb://${process.env.mongo_user}:${process.env.mongo_password}@ds117334.mlab.com:17334/fullstack`
+const url = process.env.MONGODB_URI
 const personSchema = mongoose.Schema({
   name: String,
   number: String,
